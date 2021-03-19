@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>everything | Feed</title>
+        <link rel="stylesheet" href="/static/bootstrap.min.css"/>
+        <script src="/static/jquery-3.5.1.slim.min.js"></script>
+        <script src="/static/popper.min.js"></script>
+        <script src="/static/bootstrap.bundle.min.js"></script>
+        <style>
+            body, html {
+                padding: 0;
+                margin: 0;
+                width: 100%;
+                height: 100%;
+                overflow: hidden;
+            }
+            
+            #settings {
+                height: 2em;
+                width:  2em;
+            }
+            
+            #cats {
+                font-weight: bold;
+                font-size: 1.2em;
+            }
+            
+            #catbar {
+                background: rgba(0, 0, 0, 0.2);
+            }
+            
+            #content {
+                overflow: auto;
+            }
+            
+            .feed-item {
+              max-height: 10em;
+            }
+            
+            .item-headline {
+              font-size: 1.2em;
+              font-weight: bold;
+            }
+            
+            .item-source {
+                align-self: start;
+            }
+            
+            .item-description {
+                overflow: auto;
+            }
+        </style>
+    </head>
+    <body class="d-flex flex-column flex-nowrap">
+        <div id="catbar" class="d-flex flex-row py-2">
+            <div class="d-flex flex-row align-items-center pl-2">
+                <span id="cats">Kategorien:</span>
+            </div>
+            
+            <div class="col">
+                <ul class="nav nav-pills" id="pills-tab" role="tablist">
+                    {% for c, cat in cats %}
+                    
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link {{ 'active' if c == 0 else '' }}" id="cat-{{ cat }}-tab" data-toggle="pill" href="#cat-{{ cat }}" role="tab" aria-controls="cat-{{ cat }}" aria-selected="{{ 'true' if c == 0 else 'false' }}">{{ cat }}</a>
+                    </li>
+                    
+                    {% endfor %}
+                </ul>
+            </div>
+            
+            <div class="pr-2 d-flex flex-row align-items-center justify-content-end">
+                <a href="/settings">
+                    <img id="settings" src="/static/settings.png"/>
+                </a>
+            </div>
+        </div>
+        <div id="content" class="tab-content p-1">
+            {% for c, cat in cats %}
+            
+            <div class="tab-pane fade {{ 'show active' if c == 0 else '' }}" id="cat-{{ cat }}" role="tabpanel" aria-labelledby="cat-{{ cat }}-tab">
+                <div class="d-flex flex-column flex-nowrap">
+                
+                    {% for item in feed %}
+                        {% if item["category"] == cat %}
+                        
+                        <div class="feed-item d-flex flex-row flex-nowrap w-100 mb-1">
+                            
+                            {% if item["thumbnail"] %}
+                            <img class="item-thumbnail" src="{{ item['thumbnail'] }}"/>
+                            {% endif %}
+                            
+                            <div class="d-flex flex-column flex-nowrap p-2 w-100">
+                                <a href="{{ item['link'] }}" target="_blank"><span class="item-headline text-white">{{ item["headline"] }}</span></a>
+                                <span class="item-description text-muted">{{ item["content"] }}</span>
+                                <span class="item-source badge badge-light">{{ item["source"] }}</span>
+                            </div>
+                            
+                        </div>
+                        
+                        {% endif %}
+                    {% endfor %}
+                
+                </div>
+            </div>
+            
+            {% endfor %}
+        </div>
+    </body>
+</html>

@@ -14,7 +14,7 @@ Maybe adjust the values in `src/conf.py` to your needs.
 ### Execution
 Run it with
 ```sh
-./launch.sh
+./src/everything.py
 ```
 
 This will spawn a webserver on the specified address in `src/conf.py` (default 127.0.0.1:7070).

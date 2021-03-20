@@ -10,8 +10,10 @@ import logging
 
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
+from flask import Markup
 
 import conf
+import server
 
 class State:
     timer_interval = conf.DEFAULT_TIMER_INTERVAL
@@ -61,7 +63,7 @@ def remove_feed_items(sub):
 def remove_feed_category(cat):
     for item in State.feed:
         if item["category"] == cat:
-            item["category"] = None
+            item["category"] = "Sonstiges"
 
 def config_changed(new_config):
     if new_config is None:
@@ -93,21 +95,26 @@ def config_changed(new_config):
         State.timer_interval = new_config["timer"]
         State.logger.debug(f"Set timer: {State.timer_interval}")
     
+    n = 0
     for sub in fetch:
-        State.feed.extend(State.modules[sub["module"]].update(sub))
+        for item in State.modules[sub["module"]].update(sub):
+            State.feed.append(prepare_item(item))
+            n += 1
+    State.logger.debug(f"Added {n} new items to feed")
+
+def prepare_item(item):
+    if item["category"] is None:
+        item["category"] = "Sonstiges"
+    item["content"] = Markup(item["content"])
+    return item
 
 def fetch_subs():
     n = 0
     for sub in State.subscriptions:
         for item in State.modules[sub["module"]].update(sub):
-            State.feed.append(item)
+            State.feed.append(prepare_item(item))
             n += 1
     State.logger.debug(f"Added {n} new items to feed")
-
-def save_feed_file():
-    with open(conf.FEED_FILE, "w") as f:
-        f.write(json.dumps(sorted(State.feed, key=lambda x: x["timestamp"], reverse=True)))
-    State.logger.debug("Updated feed file")
 
 def read_modules():
     sys.path.append(conf.MODULE_DIR)
@@ -116,19 +123,10 @@ def read_modules():
         if module.endswith(".py"):
             name, _ = module.split(".")
             mod = __import__(name)
-            State.logger.debug(f"Added module: {name}")
+            State.logger.debug(f"Imported module: {name}")
             State.modules[name] = mod
 
-def main():
-    State.logger.setLevel(logging.DEBUG)
-    State.logger.addHandler(logging.StreamHandler(sys.stdout))
-    
-    read_modules()
-    
-    State.observer.schedule(ConfigFileObserver(), conf.CONFIG_FILE)
-    State.observer.start()
-    TimerThread().start()
-    
+def event_thread():
     while True:
         event = State.events.get()
         
@@ -138,8 +136,22 @@ def main():
         elif event["event"] == "reload":
             State.logger.info("Event: timer reload")
             fetch_subs()
-        
-        save_feed_file()
+            
+        State.feed = sorted(State.feed, key=lambda x: x["timestamp"], reverse=True)
+        State.categories = sorted(State.categories)
+
+def main():
+    State.logger.setLevel(logging.DEBUG)
+    State.logger.addHandler(logging.StreamHandler(sys.stdout))
+    
+    read_modules()
+    
+    State.observer.schedule(ConfigFileObserver(), conf.CONFIG_FILE)
+    State.observer.start()
+    threading.Thread(target=event_thread).start()
+    TimerThread().start()
+    
+    server.main(State)
 
 if __name__ == "__main__":
     main()

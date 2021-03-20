@@ -1,6 +1,5 @@
 CONFIG_FILE = "config.json"
 MODULE_DIR = "src/modules"
-FEED_FILE = "feed.json"
 DEFAULT_TIMER_INTERVAL = 5 * 60
 STATIC_FOLDER = "src/static"
 TEMPLATE_FOLDER = "src/templates"

@@ -13,18 +13,9 @@ from watchdog.events import FileSystemEventHandler
 
 import conf
 
-class LimitedList(list):
-    def __init__(self, maxsize):
-        self._maxsize = maxsize
-        
-    def append(self, item):
-        if len(self) == self._maxsize:
-            self.pop(0)
-        super().append(item)
-
 class State:
     timer_interval = conf.DEFAULT_TIMER_INTERVAL
-    feed = LimitedList(conf.FEED_SIZE)
+    feed = []
     events = queue.Queue()
     modules = {}
     subscriptions = []
@@ -75,7 +66,7 @@ def remove_feed_category(cat):
 def config_changed(new_config):
     if new_config is None:
         return
-        
+    
     fetch = []
     
     for new_sub in new_config["subs"]:
@@ -106,8 +97,12 @@ def config_changed(new_config):
         State.feed.extend(State.modules[sub["module"]].update(sub))
 
 def fetch_subs():
+    n = 0
     for sub in State.subscriptions:
-        State.feed.extend(State.modules[sub["module"]].update(sub))
+        for item in State.modules[sub["module"]].update(sub):
+            State.feed.append(item)
+            n += 1
+    State.logger.debug(f"Added {n} new items to feed")
 
 def save_feed_file():
     with open(conf.FEED_FILE, "w") as f:
@@ -122,7 +117,7 @@ def read_modules():
             name, _ = module.split(".")
             mod = __import__(name)
             State.logger.debug(f"Added module: {name}")
-            State.modules[mod.MODULE_NAME] = mod
+            State.modules[name] = mod
 
 def main():
     State.logger.setLevel(logging.DEBUG)

@@ -5,7 +5,6 @@ from urllib.parse import urlparse
 
 import feedparser
 
-MODULE_NAME = "News"
 MODULE_LOGO = "/static/News.jpg"
 
 class State:
@@ -24,9 +23,9 @@ def update(sub):
         date = datetime.datetime(year, month, day, hour, minute, second)
         
         content = ""
-        if "description" in entry and entry.description.count(".") < 10 and "<img" not in entry.description:
+        if "description" in entry and entry.description.count(". ") < 10 and "<img" not in entry.description:
             content = entry.description.replace("...", ". ").replace(". ", ".<br/>").strip()
-            
+        
         source = urlparse(sub["url"]).netloc
         
         if source.startswith("www."):
@@ -51,4 +50,4 @@ def update(sub):
                 "source" : source
             }
     
-    State.feeds[sub["url"]] = datetime.datetime.now()
+    State.feeds[sub["url"]] = datetime.datetime.utcnow()

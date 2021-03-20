@@ -9,8 +9,6 @@ from urllib.parse import urlparse
 
 from secrets import YOUTUBE_API_KEY as API_KEY
 
-MODULE_NAME = "YouTube"
-
 BASE_URL = "https://www.googleapis.com/youtube/v3"
 
 class YouTubeException(Exception):
@@ -105,4 +103,4 @@ def update(sub):
                 "source" : State.name_mapping[sub["url"]]["title"]
             }
     
-    State.timestamps[sub["url"]] = datetime.datetime.now()
+    State.timestamps[sub["url"]] = datetime.datetime.utcnow()

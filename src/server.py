@@ -10,7 +10,8 @@ from flask import Flask, render_template, Markup
 
 import conf
 
-State = None
+feed = []
+categories = []
 
 app = Flask(
     __name__,
@@ -20,9 +21,13 @@ app = Flask(
 
 @app.route("/")
 def index():
-    return render_template("index.html", feed=State.feed, cats=list(enumerate(State.categories)))
+    global feed, categories
+    return render_template("index.html", feed=feed, cats=list(enumerate(categories + [conf.UNCATEGORIZED_NAME])))
 
-def main(s):
-    global State
-    State = s
+def update(f, c):
+    global feed, categories
+    feed = f
+    categories = c
+
+def main():
     app.run(host=conf.SERVER_HOST, port=conf.SERVER_PORT)

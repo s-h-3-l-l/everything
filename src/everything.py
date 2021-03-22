@@ -7,6 +7,7 @@ import json
 import threading
 import time
 import logging
+import datetime
 
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
@@ -63,7 +64,7 @@ def remove_feed_items(sub):
 def remove_feed_category(cat):
     for item in State.feed:
         if item["category"] == cat:
-            item["category"] = "Sonstiges"
+            item["category"] = conf.UNCATEGORIZED_NAME
 
 def config_changed(new_config):
     if new_config is None:
@@ -104,7 +105,7 @@ def config_changed(new_config):
 
 def prepare_item(item):
     if item["category"] is None:
-        item["category"] = "Sonstiges"
+        item["category"] = UNCATEGORIZED_NAME
     item["content"] = Markup(item["content"])
     return item
 
@@ -136,9 +137,10 @@ def event_thread():
         elif event["event"] == "reload":
             State.logger.info("Event: timer reload")
             fetch_subs()
-            
+
         State.feed = sorted(State.feed, key=lambda x: x["timestamp"], reverse=True)
         State.categories = sorted(State.categories)
+        server.update(State.feed, State.categories)
 
 def main():
     State.logger.setLevel(logging.DEBUG)
@@ -150,8 +152,8 @@ def main():
     State.observer.start()
     threading.Thread(target=event_thread).start()
     TimerThread().start()
-    
-    server.main(State)
+
+    server.main()
 
 if __name__ == "__main__":
     main()

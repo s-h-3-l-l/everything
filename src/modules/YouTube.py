@@ -54,7 +54,7 @@ def get_channel(name=None, id=None):
     return r["items"][0]["id"], r["items"][0]["contentDetails"]["relatedPlaylists"]["uploads"], r["items"][0]["snippet"]["title"]
 
 class State:
-    logger = logging.getLogger("everything.update_daemon")
+    logger = logging.getLogger("everything")
     name_mapping = {}
     timestamps = {}
     

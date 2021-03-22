@@ -8,7 +8,7 @@ import feedparser
 MODULE_LOGO = "/static/News.jpg"
 
 class State:
-    logger = logging.getLogger("everything.update_daemon")
+    logger = logging.getLogger("everything")
     feeds = {}
 
 def update(sub):

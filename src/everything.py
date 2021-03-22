@@ -24,7 +24,7 @@ class State:
     subscriptions = []
     categories = []
     observer = Observer()
-    logger = logging.getLogger("everything.update_daemon")
+    logger = logging.getLogger("everything")
 
 class ConfigFileObserver(FileSystemEventHandler):
     def __init__(self):

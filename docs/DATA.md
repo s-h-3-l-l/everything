@@ -15,19 +15,17 @@
 }
 ```
 
-### FEED FILE
+### Feed item
 ```
-[
-    {
-        "module" : (string),
-        "source" : (string),
-        "headline" : (string),
-        "thumbnail" : (string|null),
-        "content" : (string),
-        "category" : (string|null),
-        "sub" : (string) # URL,
-        "timestamp" : (integer),
-        "link" : (string|null)
-    }
-]
+{
+    "module" : (string),
+    "source" : (string),
+    "headline" : (string),
+    "thumbnail" : (string|null),
+    "content" : (string),
+    "category" : (string),
+    "sub" : (string) # URL,
+    "timestamp" : (integer),
+    "link" : (string|null)
+}
 ```

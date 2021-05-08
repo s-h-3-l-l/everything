@@ -1,6 +1,11 @@
 # everything
 This program brings News-feeds, Podcasts, YouTube subscriptions and much more into one place.
 
+### Disclaimer
+This program is meant for use in private LANs only.   
+Do NOT make this accessible to untrusted users.    
+This program is not secure.
+
 ### Installation
 ```sh
 pip install -r requirements.txt
@@ -22,3 +27,5 @@ This will spawn a webserver on the specified address in `src/conf.py` (default 1
 ### TODO
 - Web interface for changing conf.json
 - Twitter module
+- Proper installation with virtualenv and systemd unit
+- News -> Feed

@@ -150,9 +150,29 @@ def event_thread():
         State.categories = sorted(State.categories)
         server.update(State.feed, State.categories, State.subscriptions, State.timer_interval, list(State.modules))
 
+def test_config():
+    if not os.path.isfile(conf.CONFIG_FILE):
+        State.logger.error("Config file doesn't exist")
+        return False
+        
+    if not os.path.isdir(conf.MODULE_DIR):
+        State.logger.error("Module dir doesn't exist")
+        return False
+        
+    if not os.path.isdir(conf.STATIC_FOLDER):
+        State.logger.error("Static folder doesn't exist")
+        return False
+        
+    if not os.path.isdir(conf.TEMPLATE_FOLDER):
+        State.logger.error("Template folder does not exist")
+        return False
+
 def main():
     State.logger.setLevel(logging.DEBUG)
     State.logger.addHandler(logging.StreamHandler(sys.stdout))
+    
+    if not test_config():
+        exit(1)
     
     read_modules()
     

@@ -112,7 +112,15 @@ def prepare_item(item):
 def fetch_subs():
     n = 0
     for sub in State.subscriptions:
-        for item in State.modules[sub["module"]].update(sub):
+        # Sometimes interacting with the outside
+        # world can go wrong so catch possible
+        # errors.
+        try:
+            new_items = State.modules[sub["module"]].update(sub)
+        except:
+            continue
+        
+        for item in new_items:
             State.feed.append(prepare_item(item))
             n += 1
     State.logger.debug(f"Added {n} new items to feed")
@@ -140,7 +148,7 @@ def event_thread():
 
         State.feed = sorted(State.feed, key=lambda x: x["timestamp"], reverse=True)
         State.categories = sorted(State.categories)
-        server.update(State.feed, State.categories)
+        server.update(State.feed, State.categories, State.subscriptions, State.timer_interval, list(State.modules))
 
 def main():
     State.logger.setLevel(logging.DEBUG)

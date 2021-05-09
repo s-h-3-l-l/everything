@@ -33,8 +33,17 @@ def timer_thread():
 
 def load_config():
     c = None
-    with open(conf.CONFIG_FILE) as f:
-        c = json.load(f)
+    
+    if os.path.isfile(conf.CONFIG_FILE):
+        with open(conf.CONFIG_FILE) as f:
+            c = json.load(f)
+    else:
+        c = {
+            "subs" : [],
+            "cats" : [],
+            "timer" : None
+        }
+        
     State.subscriptions = c["subs"]
     State.categories = c["cats"]
     if c["timer"] is not None:
@@ -219,10 +228,6 @@ def event_thread():
         State.categories = sorted(State.categories)
 
 def test_config():
-    if not os.path.isfile(conf.CONFIG_FILE):
-        State.logger.error("Config file doesn't exist")
-        return False
-        
     if not os.path.isdir(conf.MODULE_DIR):
         State.logger.error("Module dir doesn't exist")
         return False

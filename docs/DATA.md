@@ -1,4 +1,4 @@
-### CONFIG FILE
+### Config file
 ```
 {
     "subs" : [

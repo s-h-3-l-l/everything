@@ -19,18 +19,23 @@ Create a file `src/secrets.py` that contains the following variables:
 
 Maybe adjust the values in `src/conf.py` to your needs.
 
-If you want to run this as a service enter the correct parameter for ExecStart
+If you want to run this as a service enter the correct values
 in `everything.service` and execute:  
 ```
-cp everything.service /etc/systemd/system
+sudo ln -s $(realpath ./everything.service) /etc/systemd/system
 sudo systemctl enable everything
-sudo systemctl start everything
 ```
 
 ### Execution
 Run it with
 ```sh
 ./src/everything.py
+```
+
+or
+
+```sh
+sudo systemctl start everything
 ```
 
 This will spawn a webserver on the specified address in `src/conf.py` (default 127.0.0.1:7070).

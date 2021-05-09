@@ -1,6 +1,8 @@
 __pycache__/
 src/secrets.py
-/config.json
+config.json
 /feed.json
 /NOTES
 /venv
+src/conf.py
+/everything.service

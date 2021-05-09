@@ -15,9 +15,19 @@ from flask import Markup
 import conf
 import server
 
+class LimitedList(list):
+    def __init__(self, size):
+        super().__init__()
+        self._max_size = size
+    
+    def append(self, item):
+        if len(self) >= self._max_size:
+            self.pop(0)
+        super().append(item)
+
 class State:
     timer_interval = conf.DEFAULT_TIMER_INTERVAL
-    feed = []
+    feed = LimitedList(conf.FEED_SIZE)
     events = queue.Queue()
     modules = {}
     subscriptions = []
@@ -245,7 +255,7 @@ def test_config():
     return True
 
 def main():
-    State.logger.setLevel(logging.DEBUG)
+    State.logger.setLevel(logging.ERROR)
     State.logger.addHandler(logging.StreamHandler(sys.stderr))
     
     load_config()

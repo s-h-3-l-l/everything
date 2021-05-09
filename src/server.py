@@ -4,8 +4,6 @@ import os
 import json
 import time
 
-from watchdog.observers import Observer
-from watchdog.events import FileSystemEventHandler
 from flask import Flask, render_template, Markup, request, redirect
 
 import conf

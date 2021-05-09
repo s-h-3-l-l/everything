@@ -1,0 +1,9 @@
+[Unit]
+Description=everything. Brings News-feeds, Podcasts, YouTube and much more into one place.
+Requires=Network.target
+
+[Service]
+ExecStart=<PATH TO THIS REPO>/launch.sh
+
+[Install]
+WantedBy=multi-user.target

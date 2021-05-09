@@ -157,9 +157,6 @@ def fetch_subs(filter=None):
         if filter is not None and sub["url"] != filter:
             continue
         
-        # Sometimes interacting with the outside
-        # world can go wrong so catch possible
-        # errors.
         try:
             new_items = State.modules[sub["module"]].update(sub)
             for item in new_items:

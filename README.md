@@ -42,5 +42,4 @@ This will spawn a webserver on the specified address in `src/conf.py` (default 1
 
 ### TODO
 - Twitter module
-- News -> Feed
 - mobile friendly

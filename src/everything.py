@@ -15,19 +15,9 @@ from flask import Markup
 import conf
 import server
 
-class LimitedList(list):
-    def __init__(self, size):
-        super().__init__()
-        self._max_size = size
-    
-    def append(self, item):
-        if len(self) >= self._max_size:
-            self.pop(0)
-        super().append(item)
-
 class State:
     timer_interval = conf.DEFAULT_TIMER_INTERVAL
-    feed = LimitedList(conf.FEED_SIZE)
+    feed = []
     events = queue.Queue()
     modules = {}
     subscriptions = []
@@ -127,7 +117,8 @@ def subscription_add(url, module, category):
 def subscription_delete(url):
     for i in range(len(State.subscriptions)):
         if State.subscriptions[i]["url"] == url:
-            State.subscriptions.pop(i)
+            sub = State.subscriptions.pop(i)
+            State.modules[sub["module"]].delete(sub)
             break
     else:
         return
@@ -196,6 +187,27 @@ def read_modules():
             State.logger.debug(f"Imported module: {name}")
             State.modules[name] = mod
 
+def apply_size_limit():
+    counters = {}
+    i = 0
+    pre_size = len(State.feed)
+    
+    while i < len(State.feed):
+        cat = State.feed[i]["category"]
+        
+        if cat not in counters:
+            counters[cat] = 1
+        else:
+            if counters[cat] >= conf.FEED_SIZE:
+                State.feed.pop(i)
+                continue
+            else:
+                counters[cat] += 1
+            
+        i += 1
+        
+    State.logger.debug(f"Cleansed {len(State.feed) - pre_size} feed items")
+
 def event_thread():
     while True:
         event = State.events.get()
@@ -236,6 +248,7 @@ def event_thread():
 
         State.feed = sorted(State.feed, key=lambda x: x["timestamp"], reverse=True)
         State.categories = sorted(State.categories)
+        apply_size_limit()
 
 def test_config():
     if not os.path.isdir(conf.MODULE_DIR):
@@ -255,7 +268,7 @@ def test_config():
     return True
 
 def main():
-    State.logger.setLevel(logging.ERROR)
+    State.logger.setLevel(logging.DEBUG)
     State.logger.addHandler(logging.StreamHandler(sys.stderr))
     
     load_config()

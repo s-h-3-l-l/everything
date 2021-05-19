@@ -18,7 +18,7 @@ app = Flask(
 
 @app.route("/settings")
 def settings():
-    return render_template("settings.html", categories=state.categories + [conf.UNCATEGORIZED_NAME], subscriptions=list(enumerate(state.subscriptions)), modules=list(state.modules), timer=state.timer_interval)
+    return render_template("settings.html", categories=state.categories + [conf.UNCATEGORIZED_NAME], subscriptions=list(enumerate(state.subscriptions)), modules=sorted(state.modules), timer=state.timer_interval)
 
 @app.route("/")
 def index():

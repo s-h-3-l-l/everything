@@ -77,6 +77,11 @@ def parse_channel_url(url):
     else:
         raise YouTubeException(f"Unknown url: {url.path}")
     
+def delete(sub):
+    State.logger.debug(f"Doing modules.YouTube.delete: {sub}")
+    if sub["url"] in State.timestamps:
+        State.timestamps[sub["url"]] = datetime.datetime(1970, 1, 1)
+    
 def update(sub):
     State.logger.debug(f"Doing modules.YouTube.update: {sub}")
     

@@ -11,6 +11,11 @@ class State:
     logger = logging.getLogger("everything")
     feeds = {}
 
+def delete(sub):
+    State.logger.debug(f"Doing modules.News.delete: {sub}")
+    if sub["url"] in State.feeds:
+        State.feeds[sub["url"]] = datetime.datetime(1970, 1, 1)
+
 def update(sub):
     State.logger.debug(f"Doing modules.News.update: {sub}")
     feed = feedparser.parse(sub["url"])
